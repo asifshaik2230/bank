@@ -84,7 +84,7 @@ public class CustomerService {
 	        if (customer.getAccountNumber().equals(request.getReceiverAccountNumber())) {
 	        	storeTransaction(customer, totalAmount, request, bankRepo.findById(request.getReceiverBIC()).get()
 	                    , messageCodeRepository.findById(request.getMessageCode()).get(), "Failed", "Cannot Transfer amount to itself");
-	            return "Transaction Failed, no self bro....";
+//	            return "Transaction Failed, no self bro....";
 	        }
 	        
 	        
