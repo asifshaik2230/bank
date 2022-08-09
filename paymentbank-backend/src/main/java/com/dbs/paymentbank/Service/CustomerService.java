@@ -1,6 +1,7 @@
 package com.dbs.paymentbank.Service;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class CustomerService {
 	@Autowired
 	SanctionRepository sanctionRepository;
 	
+	@Autowired
+	MessageRepository messageRepository;
+	
 	
 	private Transaction storeTransaction(Customer customer, Double totalAmount,TransactionRequest payload, BankBic bankbic,MessageCode messageCode, String status, String reason) {
 		
@@ -60,6 +64,10 @@ public class CustomerService {
 		// TODO Auto-generated method stub
 		return bankRepo.findById(bic);
 	}
+	public List<MessageCode> getMessageCodes() {
+		// TODO Auto-generated method stub
+		return messageCodeRepository.findAll();
+	}
 
 	public String processTransaction(TransactionRequest request) {
 		System.out.println(request);
@@ -84,7 +92,7 @@ public class CustomerService {
 	        if (customer.getAccountNumber().equals(request.getReceiverAccountNumber())) {
 	        	storeTransaction(customer, totalAmount, request, bankRepo.findById(request.getReceiverBIC()).get()
 	                    , messageCodeRepository.findById(request.getMessageCode()).get(), "Failed", "Cannot Transfer amount to itself");
-//	            return "Transaction Failed, no self bro....";
+	            return "Transaction Failed, no self bro....";
 	        }
 	        
 	        
@@ -95,6 +103,7 @@ public class CustomerService {
 	        customerRepository.save(customer);
 		return "Enjoy Pandagoo......";
 	}
+	
 	
 	 
 }
