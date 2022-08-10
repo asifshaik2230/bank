@@ -95,7 +95,15 @@ public class CustomerService {
 	            return "Transaction Failed, no self bro....";
 	        }
 	        
-	        
+	        //transaction type bro...
+	        if (customer.getCustomerName().equals("HDFC BANK") && !request.getTransferTypeCode().equals("O")) {
+	           
+	                storeTransaction(customer, totalAmount, request, bankRepo.findById(request.getReceiverBIC()).get()
+	                        , messageCodeRepository.findById(request.getMessageCode()).get(), "FAILED", "Receiver and Sender Account number must be an Internal HDFC bank");
+	                return "no HDFC bro..";
+	            
+	           // request.setReceiverAccountName(receiver.get().getName());
+	        }
 	       //sucess case bro..
 	      storeTransaction(customer, totalAmount, request, bankRepo.findById(request.getReceiverBIC()).get()
 	                , messageCodeRepository.findById(request.getMessageCode()).get(), "SUCCESS", null);

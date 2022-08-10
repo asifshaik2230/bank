@@ -128,13 +128,14 @@ this.messageCodes=this.getMessageTypeCodes();
     return this.http.post<any>("http://localhost:8080/api/transaction", transactionRequest).pipe(
       map(res => {
         console.log(JSON.stringify(res))
-        localStorage.setItem('lastMade', JSON.stringify(res));
+        //localStorage.setItem('lastMade', JSON.stringify(res));
         return res;
       })
     )
   }
+ 
   submit() {
-
+  console.log(this.employee.get('totalAmount')?.value)
     const {
       accountNumber = '',
       amount = 0.0,
@@ -143,7 +144,8 @@ this.messageCodes=this.getMessageTypeCodes();
       receiverAccountNumber = '',
       receiverBIC = '',
       transferTypeCode = ''
-    } = {...this.employee.value, ...this.sender.value, ...this.receiver.value}
+    } = {...this.employee.value,amount:this.employee.get('totalAmount')?.value, ...this.sender.value, ...this.receiver.value}
+    console.log(this.employee.value,this.sender.value,this.receiver.value)
     const transactionRequest: TransactionRequest = {
       payload: {
         customerId: accountNumber,
