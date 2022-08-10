@@ -1,0 +1,40 @@
+<div><h1> Payment Bank</h1>
+<form  [formGroup]="sender">
+    Enter Account Number<input type="text" (focusout)="fetchDetails()"  formControlName="accountNumber">
+    <br>
+    Sender Name<input formControlName="customerName" type="text"  placeholder="Sender Name">
+    <br>Balance<input formControlName="clearBalance" type="text" placeholder="Sender Account Number">
+    <br>
+</form>
+
+<form  [formGroup]="receiver">
+   Receiver Account Number <input appNumbersOnly formControlName="receiverAccountNumber" type="text" placeholder="Sender Account Number">
+    <br>Receiver Name<input formControlName="receiverAccountName" type="text" placeholder="Receiver Account Holder Name">
+    <br>BIC <input (focusout)="fetchBIC()" formControlName="receiverBIC" type="text" >
+    <br>Bank Name<input formControlName="receiverBankName" type="text" >
+    <br>
+</form>
+
+<form  [formGroup]="employee">
+    <select formControlName="transferTypeCode">
+        <option *ngFor="let code of transferTypeCodeList |async" [value]="code.value">
+          {{code.name}}
+        </option>
+      </select>
+      <br><select formControlName="messageCode" >
+        <option  *ngFor="let messageType of messageCodes |async"
+        [value]="messageType.messageCode" selected>{{messageType.messageCode}}
+        </option>
+      </select>
+      <br><select formsControlName="currencyType" #mySelect
+      (change)='updateINR(mySelect.value)' >
+        <option *ngFor="let currency of currencyTypes " [value]="currency.code">
+          {{currency.code}}
+        </option>
+      </select>
+      <br>Enter amount<input (focusout)="updateINR(mySelect.value)" appNumbersOnly formControlName="amount" placeholder="0" type="text">
+      <br>Total Amount<input formControlName="totalAmount" placeholder="0" type="text">
+      <br><button  (click)="submit()">Transfer</button>
+    
+</form>
+</div>
