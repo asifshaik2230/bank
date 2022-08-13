@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import {HttpClient} from "@angular/common/http";
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { ErrorComponent } from '../error/error.component';
 
 interface Customer {
   accountNumber: string;
@@ -38,7 +40,10 @@ interface CurrencyType {
     transferTypeCode: 'C' | 'O'
   }
 }
-
+interface ErrorResponse{
+  message:string,
+  description:string
+}
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -47,9 +52,11 @@ interface CurrencyType {
 
 
 export class HomeComponent implements OnInit {
-  sender!: FormGroup;
-  receiver!: FormGroup;
-  employee!: FormGroup
+  showComponent!:boolean;
+  error:ErrorResponse|null=null;
+  sender!: UntypedFormGroup;
+  receiver!: UntypedFormGroup;
+  employee!: UntypedFormGroup
   transferTypeCodeList: Observable<TransferTypeCode[]> = of([]);
   messageCodes: Observable<MessageType[]> = of([])
   currencyTypes: CurrencyType[] = [
@@ -60,7 +67,9 @@ export class HomeComponent implements OnInit {
     {code: 'USD', name: 'US Dollar', value: 74, symbol: '$'}
   ]
 
-  constructor(private fb: FormBuilder,private http:HttpClient) { 
+  constructor(private fb: UntypedFormBuilder,private http:HttpClient,config: NgbModalConfig, private modalService: NgbModal) {
+    const date=new Date();
+    this.showComponent=date.getDay()===6 || date.getDay()===7;
     this.sender = fb.group({
       accountNumber: ['', [Validators.required, Validators.maxLength(14), Validators.minLength(14)]],
       customerName: [{value: '', disabled: true}],
@@ -77,7 +86,7 @@ export class HomeComponent implements OnInit {
       transferTypeCode: ['', Validators.required],
       messageCode: ['', Validators.required],
       amount: ['', Validators.required],
-      currencyType:['',Validators.required],
+      // currencyType:['',Validators.required],
       totalAmount: [{value: 0, disabled: true}]
     })
   }
@@ -133,8 +142,13 @@ this.messageCodes=this.getMessageTypeCodes();
       })
     )
   }
+  test(content:any){
+   const e= this.modalService.open(content)
+   this.error={message:"site error",
+  description:"dengei.."};
+  }
  
-  submit() {
+  submit(content:any) {
   console.log(this.employee.get('totalAmount')?.value)
     const {
       accountNumber = '',
@@ -158,6 +172,9 @@ this.messageCodes=this.getMessageTypeCodes();
       }
     }
     this.transactionRequest(transactionRequest.payload).subscribe(val => {
+     this.sender.reset();
+     this.receiver.reset();
+     this.employee.reset();
   console.log(val,"hio");
       // this.dialog.open(SuccessComponent)
       // this.lastTransaction = this.data.getLastTransaction();
@@ -165,7 +182,14 @@ this.messageCodes=this.getMessageTypeCodes();
       // this.snack.open('Transaction is Successful', 'Dismiss', {
       //   duration: 1500
       // })
-    },err=>console.log(err))
+    },err=>{
+      this.error=err;
+      this.sender.reset();
+     this.receiver.reset();
+     this.employee.reset();
+      this.modalService.open(content)
+      console.log(err)
+    })
   }
 
 }

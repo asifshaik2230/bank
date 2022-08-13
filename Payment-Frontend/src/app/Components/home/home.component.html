@@ -3,11 +3,17 @@
   <a class="navbar-brand" href="#">Payment Bank</a>
 </nav>
 <br>
-<form  [formGroup]="sender">
+<!-- <app-error [error]="error" *ngIf="error"></app-error> -->
+
+<form  [formGroup]="sender" *ngIf="showComponent">
   <div class="form-group row">
     <label  class="col-sm-2 col-form-label"> Enter Account Number</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control " (focusout)="fetchDetails()"  formControlName="accountNumber">
+      <input type="text"  class="form-control " (focusout)="fetchDetails()"  formControlName="accountNumber">
+      <div *ngIf="sender.get('accountNumber')?.errors?.['required']">A/C Number is Required</div>
+      <div *ngIf="sender.get('accountNumber')?.errors?.['minlength']">A/C Number must be 14 digits
+        long
+      </div>
     </div> 
   </div>
     <br>
@@ -33,6 +39,14 @@
     <label  class="col-sm-2 col-form-label"> Receiver Account Number</label>
     <div class="col-sm-10">
       <input appNumbersOnly class="form-control" formControlName="receiverAccountNumber" type="text" placeholder="Sender Account Number">
+      <div *ngIf="receiver.get('receiverAccountNumber')?.errors?.['required']">A/C Number is Required
+      </div>
+      <div *ngIf="receiver.get('receiverAccountNumber')?.errors?.['minlength']">A/C Number must be 14
+        digits long
+      </div>
+      <div *ngIf="receiver.get('receiverAccountNumber')?.errors?.['maxlength']">A/C Number must be 14
+        digits long
+      </div>
     </div> 
   </div>
     <br>
@@ -47,6 +61,11 @@
       <label  class="col-sm-2 col-form-label"> BIC</label>
       <div class="col-sm-10">
         <input (focusout)="fetchBIC()" class="form-control" formControlName="receiverBIC" type="text" >
+        <div *ngIf="receiver.get('receiverBIC')?.errors?.['required']">BIC is Required</div>
+                <div *ngIf="receiver.get('receiverBIC')?.errors?.['minlength']">BIC must be 11 characters long
+                </div>
+                <div *ngIf="receiver.get('receiverBIC')?.errors?.['maxlength']">BIC must be 11 characters long
+                </div>
       </div> 
     </div>
     <br>
@@ -69,6 +88,7 @@
           {{code.name}}
         </option>
       </select>
+      <div>Please choose Transfer Type</div>
     </div> 
   </div>
  
@@ -126,6 +146,21 @@
           <input class="form-control" formControlName="totalAmount" placeholder="0" type="text">
         </div> 
       </div>
-      <br><button class="btn btn-success"  (click)="submit()">Transfer</button>
-    
+      <div>{{sender.invalid}}  {{receiver.invalid}}  {{employee.invalid}} </div>
+      <br>
+      <button [disabled]="sender.invalid || receiver.invalid || employee.invalid" class="btn btn-primary"  (click)="submit(content)">Transfer</button>
+  
 </form>
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{error?.message}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <p>{{error?.description}}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+  </div>
+</ng-template> 
+
